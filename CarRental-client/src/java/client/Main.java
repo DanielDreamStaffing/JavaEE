@@ -3,58 +3,66 @@ package client;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.naming.InitialContext;
 import rental.Reservation;
+import rental.ReservationConstraints;
 import session.CarRentalSessionRemote;
+import session.ManagerSession;
+import session.ReservationSession;
 
-public class Main extends AbstractTestAgency<Object, Object> {
+public class Main extends AbstractTestAgency<ReservationSession, ManagerSession> {
     
     @EJB
     static CarRentalSessionRemote session;
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         System.out.println("found rental companies: "+session.getAllRentalCompanies());
-        new Main();
+        Main client = new Main();
+        client.run();
     }
 
     public Main() {
         super("simpleTrips");
-        System.out.println("test");
     }
 
     @Override
-    protected Object getNewReservationSession(String name) throws Exception {
+    protected ReservationSession getNewReservationSession(String name) throws Exception {
+        InitialContext context = new InitialContext();
+        ReservationSession session = (ReservationSession) context.lookup(ReservationSession.class.getName());
+        return session;
+    }
+
+    @Override
+    protected ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception {
+        InitialContext context = new InitialContext();
+        ManagerSession session = (ManagerSession) context.lookup(ManagerSession.class.getName());
+        return session;
+    }
+
+    @Override
+    protected void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws Exception {
+        session.checkForAvailableCarTypes(start, end);
+    }
+
+    @Override
+    protected void addQuoteToSession(ReservationSession session, String name, Date start, Date end, String carType, String carRentalName) throws Exception {
+        session.createQuote(new ReservationConstraints(start, end, carType), carRentalName, name);
+    }
+
+    @Override
+    protected List<Reservation> confirmQuotes(ReservationSession session, String name) throws Exception {
+        return session.confirmQuotes();
+    }
+
+    @Override
+    protected int getNumberOfReservationsBy(ManagerSession ms, String clientName) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    protected Object getNewManagerSession(String name, String carRentalName) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected void checkForAvailableCarTypes(Object session, Date start, Date end) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected void addQuoteToSession(Object session, String name, Date start, Date end, String carType, String carRentalName) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected List<Reservation> confirmQuotes(Object session, String name) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected int getNumberOfReservationsBy(Object ms, String clientName) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected int getNumberOfReservationsForCarType(Object ms, String carRentalName, String carType) throws Exception {
+    protected int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
