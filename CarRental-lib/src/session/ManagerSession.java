@@ -8,6 +8,12 @@ package session;
 import javax.ejb.Remote;
 
 @Remote
-public class ManagerSession {
+public interface ManagerSession {
+    
+    int getNumberOfReservationsBy(String clientName);
+    
+    int getNumberOfReservationsForCarType(String carRentalName, String carType);
+    
+    void getCarTypes(String companyName);
     
 }

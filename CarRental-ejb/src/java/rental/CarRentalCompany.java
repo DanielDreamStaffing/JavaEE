@@ -137,4 +137,26 @@ public class CarRentalCompany {
 		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
 		getCar(res.getCarId()).removeReservation(res);
 	}
+        
+        public int getAmountReservationsByClient(String clientName){
+            int result = 0;
+            for(Car car : this.cars){
+                for(Reservation res : car.getReservations()){
+                    if(res.getCarRenter().equals(clientName)){
+                        result++;
+                    }
+                }
+            }
+            return result;
+        }
+        
+        public int getAmountReservationsByCarType(String carType){
+            int result = 0;
+            for(Car car : this.cars){
+                if(car.getType().getName().equals(carType)){
+                    result += car.getReservations().size();
+                }
+            }
+            return result;
+        }
 }

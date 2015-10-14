@@ -58,11 +58,18 @@ public class Main extends AbstractTestAgency<ReservationSession, ManagerSession>
 
     @Override
     protected int getNumberOfReservationsBy(ManagerSession ms, String clientName) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ms.getNumberOfReservationsBy(clientName);
     }
 
     @Override
     protected int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ms.getNumberOfReservationsForCarType(carRentalName, carType);
+    }
+    
+    /**
+     * Implemented because it was in the assignment, but serves no purpose.
+     */
+    protected void getCarTypes(ManagerSession ms, String companyName){
+        ms.getCarTypes(companyName);
     }
 }
