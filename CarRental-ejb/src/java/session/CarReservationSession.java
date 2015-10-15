@@ -42,11 +42,24 @@ public class CarReservationSession implements ReservationSession {
     @Override
     public List<Reservation> confirmQuotes() throws ReservationException {
         List<Reservation> reservations = new ArrayList<Reservation>();
-        for(Quote q : this.quotes){
-            CarRentalCompany company = RentalStore.getRentals().get(q.getRentalCompany());
-            reservations.add(company.confirmQuote(q));
+        try{
+            for(Quote q : this.quotes){
+                CarRentalCompany company = RentalStore.getRentals().get(q.getRentalCompany());
+                reservations.add(company.confirmQuote(q));
+            }
+            // Reservations succesful: clear the quotes from session
+            this.quotes.clear();
         }
-        this.quotes.clear();
+        catch(ReservationException e){
+            for(Reservation res : reservations){
+                CarRentalCompany company = RentalStore.getRentals().get(res.getRentalCompany());
+                company.cancelReservation(res);
+            }
+            // Reservations unsuccesful: rollback prior reservations and retain quotes for the session
+            reservations.clear();
+            // Continue throwing the exception to indicate the confirmation of quotes has failed
+            throw e;
+        }
         return reservations;
     }
 
